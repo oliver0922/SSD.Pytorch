@@ -1,178 +1,64 @@
+# KITT Dataset을 이용해 SSD 학습하기  (Google Coab 환경)
 
+## 1. Data Preparation and processing 
 
-# SSD.Pytorch
+(1) Download KITTI Dataset and Upload on Gdirve  
 
-Pytorch implementation of [[SSD (Single Shot MultiBox Detector)](https://arxiv.org/abs/1512.02325)]. 
+link= http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d  
 
-this repository is heavily depend on this implementation [ssd.pytorch](https://github.com/amdegroot/ssd.pytorch).since orginal code is too old to fit the recent version of pytorch. I make some changes , fix some bugs, and give out SSD512  code.
+1. VOC2007 폴더를 생성한 후 내부에 JPEGImages, ImageSets, Annotations 3개의 폴더를 생성한다.  
 
-## Environment
+![image](https://user-images.githubusercontent.com/69920975/122263210-2362c000-cf11-11eb-9ae1-d26932e05be6.png)
 
-python3.7 (python3 may work ok)
+2. ImageSets 폴더 내부에 Main 폴더를 생성한다.
 
-pytorch1.3
+3. 위 링크에 접속하여 left color images of objec data set(12GB)와 training labels of object data set(5MB)를 다운로드한다.  
 
-opencv
+4. gdrive/VOC2007 내부에 압축파일을 업로드한다. 
 
-## Dataset
+6. JPEGImages 폴더 내부에 image 압축파일을 넣고 해제하고, data_object_label_2 압축파일을 해제한다. 
 
-Currently I only trained on Pascal VOC dataset and my own plate dataset.
+![image](https://user-images.githubusercontent.com/69920975/122277916-6036b300-cf21-11eb-8cc2-9f23529d8510.png)
 
-U can make ur own dataset as VOC format and train ur own ssd model.
+7. repository를 clone 한다.
 
-datasets are put under ./data , u should change the path according in voc0712.py.
+(2) Data Preprocessing  
 
-## Train
+1. (Optional) KITTI Dataset의 class ('Car', 'Van', 'Truck','Pedestrian', 'Person_sitting', 'Cyclist', 'Tram','Misc' or 'DontCare') 의 개수는 총 9개이다.  
+class의 개수를 줄이고 싶다면 Fine tuning을 위해 classnamechange.py 파일 내부의 class를 변경해주고 실행해준다.  
 
-First download the fc-reduced [VGG-16](https://arxiv.org/abs/1409.1556) PyTorch base network weights at: https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth
+![image](https://user-images.githubusercontent.com/69920975/122277987-73e21980-cf21-11eb-8ccd-f91759339c24.png)
 
-By default, we assume you have downloaded the file in the ./weights dir:
+2. SSD에 사용될 dataset은 Pascal VOC dataset 형식(xml 확장자파일)이므로 KITTI Dataset label(txt 확장자파일)을 변경해줄 필요가 있다.
+따라서 txt_to_xml.py 파일을 실행해준다. 
 
-```shell
-mkdir weights
-cd weights
-wget https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth
-```
+3. trainval, test dataset으로 나누기 위해 ceat_train_test_txt.py 파일을 실행시켜준다. 
 
-to train VOC or ur own dataset, simply run :
 
-```shell
-CUDA_VISIBLE_DEVICES=0 python train.py --input 512 --dataset_root ./data/VOCdevkit --num_class 21 --num_epoch 300 --lr 0.001 --batch_size 16
-```
+## 2. Setting IP and Port for Using visdom  
 
-or u can resume ur training from the checkpoint under dir ./weights/
+visdom library(훈련 과정을 관찰하게 해주는 library)를 사용하기 위해 visdom을 설치해준다.
+train.py 내부 viz=visdom.Visdom('ip번호','port번호')를 설정해준다.
 
-```shell
-CUDA_VISIBLE_DEVICES=0 python train.py --input 512 --dataset_root ./data/VOCdevkit --num_class 21 --num_epoch 300 --lr 0.001 --batch_size 16 --resume ./weights/ssd512_VOC_12000.pth
-```
+## 4. Train(with pretrained weights)  
 
-## Evaluation
+1. clone 한 디렉토리 내부에 weights 폴더를 만들고 https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth에서 pretrained model을 다운 받는다  
+![image](https://user-images.githubusercontent.com/69920975/122281004-c1ac5100-cf24-11eb-84cc-32f0f7756bf0.png)
 
-use the eval.py to eval ur model:
+2.  train.py 내부의 --dataset_root parsing 하는 부분을 VOC2007 폴더 경로로 바꿔준다.  
+data/config 파일 내부에서 fine tunning을 위해 SSD512의 num_classes 부분을 class 개수로 바꿔준다. 마찬가지로 HOME 부분을 Clone 한 디렉토리의 제일 바깥의 폴더 경로를 입력해준다. 
+data/voc0712.py 내부의 VOC_CLASSES 부분에 검출하고자 하는 class 이름을 적어준다  
+                       VOC_ROOT 부분의 HOME 뒷부분에 dataset의 최상 디렉토리 이름을 적어준다. 
+                       
 
-```
-python eval.py --input 512 --trained_model weights/ssd512_VOC_73000_mAP79.80.pth
-```
 
-and you will get results as follows:
 
-AP for aeroplane = 0.8861
-AP for bicycle = 0.8694
-AP for bird = 0.8078
-AP for boat = 0.7698
-AP for bottle = 0.6407
-AP for bus = 0.8625
-AP for car = 0.8825
-AP for cat = 0.8671
-AP for chair = 0.6424
-AP for cow = 0.8712
-AP for diningtable = 0.6781
-AP for dog = 0.8572
-AP for horse = 0.8781
-AP for motorbike = 0.8531
-AP for person = 0.8091
-AP for pottedplant = 0.5479
-AP for sheep = 0.8327
-AP for sofa = 0.7562
-AP for train = 0.8654
-AP for tvmonitor = 0.7824
-Mean AP = 0.7980
 
-## Demo
+  
 
-u can test single image using demo.py, just change a bit code in demo.py
 
-<img src="./img/resut.jpg" alt="[](./img/resut.jpg)" style="zoom:150%;" />
 
 
+Licensed under MIT, see the LICENSE for more detail.
 
-## Results
 
-  VOC2007 test (0.5) results:
-
-| model  | paper | this implements |
-| ------ | ----- | --------------- |
-| SSD300 | 77.2  | 77.43           |
-| SSD512 | 79.8  | 79.80           |
-
-SSD300 and SSD512 model weights trained with VOC:https://pan.baidu.com/s/1DxlkOQzkFkkdYdNYsDx_MQ code:dd7m
-![](./img/map_epoch.png)
-
-![](./img/loss.png)
-
-
-## Train with Customer Dataset
-
-I trained a plate detector with ssd and work pretty well,though with a bit slow latency.
-![avatar](./img/SSDplate.jpeg)
-
-To train your own dataset：
-
-**1）make your dataset as VOC format and put it in ./data/  folder. the dataset path could be arrange as** follows:
-
-![image-20200215220618684](img/image-20200215220618684.png)
-
-
-
-JPEGImages folder is all your dataset,Annotations is all your xml labels, and create your own trainval.txt and test.txt under ImageSets/Main , just follow voc format. Above is my own dataset CityDet.
-
-**2) change the dataset parser code ./data/voc0712.py:**
-
-change :
-
-```python
-VOC_CLASSES = (  # always index 0
-    ur dataset class)
-```
-
-change:
-
-```python
-VOC_ROOT = osp.join('./', "data/VOCdevkit/")
-```
-
-to your own dataset dir:
-
-```python
-VOC_ROOT = osp.join('./', "data/CityDet/")
-```
-
-change:
-
-```python
-image_sets=[('2007', 'trainval'), ('2012', 'trainval')]
-```
-
-to:
-
-```python
-image_sets=[('2007', 'trainval')]
-```
-
-**3)  train with vgg pretrained weights**
-
-Download the fc-reduced [VGG-16](https://arxiv.org/abs/1409.1556) PyTorch base network weights at: https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth
-
-By default, we assume you have downloaded the file in the ./weights dir:
-
-```shell
-mkdir weights
-cd weights
-wget https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth
-```
-
-run :
-
-```shell
-CUDA_VISIBLE_DEVICES=0 python train.py --input 512 --dataset_root ${your dataset dir} --num_class ${your dataset class} --num_epoch 300 --lr 0.001 --batch_size 16
-```
-
-for  my CityDet dataset:
-
-```shell
-CUDA_VISIBLE_DEVICES=0 python train.py --input 512 --dataset_root ./data/CityDet/ --num_class 22 --num_epoch 300 --lr 0.001 --batch_size 16
-```
-
-and you will get start to train your own SSD detector:
-
-![sR](./img/Screenshot%20from%202020-02-15%2020-09-16.png)

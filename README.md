@@ -40,15 +40,24 @@ class의 개수를 줄이고 싶다면 Fine tuning을 위해 classnamechange.py 
 visdom library(훈련 과정을 관찰하게 해주는 library)를 사용하기 위해 visdom을 설치해준다.
 train.py 내부 viz=visdom.Visdom('ip번호','port번호')를 설정해준다.
 
-## 4. Train(with pretrained weights)  
+## 3. Train(with pretrained weights)  
 
 1. clone 한 디렉토리 내부에 weights 폴더를 만들고 https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth에서 pretrained model을 다운 받는다  
 ![image](https://user-images.githubusercontent.com/69920975/122281004-c1ac5100-cf24-11eb-84cc-32f0f7756bf0.png)
 
-2.  train.py 내부의 --dataset_root parsing 하는 부분을 VOC2007 폴더 경로로 바꿔준다.  
-data/config 파일 내부에서 fine tunning을 위해 SSD512의 num_classes 부분을 class 개수로 바꿔준다. 마찬가지로 HOME 부분을 Clone 한 디렉토리의 제일 바깥의 폴더 경로를 입력해준다. 
-data/voc0712.py 내부의 VOC_CLASSES 부분에 검출하고자 하는 class 이름을 적어준다  
-                       VOC_ROOT 부분의 HOME 뒷부분에 dataset의 최상 디렉토리 이름을 적어준다. 
+2.  **train.py** 내부의 --dataset_root parsing 하는 부분을 VOC2007 폴더 경로로 바꿔준다.  
+**data/config.py** 내부에서 fine tunning을 위해 SSD512의 num_classes 부분을 class 개수로 바꿔준다.  
+마찬가지로 HOME 부분을 Clone 한 디렉토리의 제일 바깥의 폴더 경로를 입력해준다. 
+**data/voc0712.py** 내부의 VOC_CLASSES 부분에 검출하고자 하는 class 이름을 적어준다  
+                    VOC_ROOT 부분의 HOME 뒷부분에 dataset의 최상 디렉토리 이름을 적어준다.  
+3. train.py 파일을 실행시킨다 (만약 실행하다 중단된 경우 weights 폴더 내부의 pth확장자 파일을 사용해서 !python train.py --resume ./weights/ssd512_VOC_12000.pth을 실행시킨다)
+ ![image](https://user-images.githubusercontent.com/69920975/122283958-12717900-cf28-11eb-95d3-5d290464c62c.png)
+
+4. ip주소:port 번호로 접속을 하면 실시간 loss를 관찰할 수 있다. 
+
+## 4. Eval
+
+                    
                        
 
 

@@ -50,7 +50,7 @@ train.py 내부 viz=visdom.Visdom('ip번호','port번호')를 설정해준다.
 마찬가지로 HOME 부분을 Clone 한 디렉토리의 제일 바깥의 폴더 경로를 입력해준다. 
 **data/voc0712.py** 내부의 VOC_CLASSES 부분에 검출하고자 하는 class 이름을 적어준다  
                     VOC_ROOT 부분의 HOME 뒷부분에 dataset의 최상 디렉토리 이름을 적어준다.  
-3. train.py 파일을 실행시킨다 (만약 실행하다 중단된 경우 weights 폴더 내부의 pth확장자 파일을 사용해서 !python train.py --resume ./weights/ssd512_VOC_12000.pth을 실행시킨다)
+3. train.py 파일을 실행시킨다 (만약 실행하다 중단된 경우 weights 폴더 내부의 pth확장자 파일을 사용해서 !python train.py --resume ./weights/ssd512_VOC_12000.pth을 실행시킨다)  
  ![image](https://user-images.githubusercontent.com/69920975/122283958-12717900-cf28-11eb-95d3-5d290464c62c.png)
 
 4. ip주소:port 번호로 접속을 하면 실시간 loss를 관찰할 수 있다. 

@@ -1,4 +1,4 @@
-# KITT Dataset을 이용해 SSD 학습하기  (Google Coab 환경)
+# KITTI Dataset을 이용해 SSD 학습하기  (Google Coab 환경)
 
 ## 1. Data Preparation and processing 
 

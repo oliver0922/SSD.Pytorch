@@ -42,6 +42,9 @@ class의 개수를 줄이고 싶다면 Fine tuning을 위해 classnamechange.py 
 
 실행 시 ImageSets/Main 폴더 내부에 아래와 같은 파일들이 생기는데, train_val.txt 파일에는 훈련시킬 사진들의 파일명, test.txt 파일에는 시험할 사진들의 파일명이 기록되어있다.  
 
+![image](https://user-images.githubusercontent.com/69920975/122329897-2ab7b700-cf6d-11eb-900d-7886335d62e0.png)
+
+
 ## 2. Import visdom
 
 학습 과정을 관찰할 수 있는 library visdom을 import한다. 
